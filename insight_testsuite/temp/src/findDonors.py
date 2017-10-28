@@ -27,17 +27,27 @@ def build_zip(dic, receiver, zipcode):
 # generate file for medianvals_by_date.txt
 def build_date(dic):
     for id in sorted(dic.iterkeys()):
-        for dt in sorted(dic[id].iterkeys(), key=int):
+        for dt in sorted(dic[id].iterkeys(), cmp=compare):
             median = get_median(dic[id][dt])
             number = len(dic[id][dt])
             total = sum(dic[id][dt])
 
-            if len(str(dt)) == 7:
-                new_date = str(0) + str(dt)
-            else:
-                new_date = str(dt)
-            result = id + '|' + new_date + '|' + str(median) + '|' + str(number) + '|' + str(total)
+            # if len(str(dt)) == 7:
+            #     new_date = str(0) + str(dt)
+            # else:
+            #     new_date = str(dt)
+            result = id + '|' + dt + '|' + str(median) + '|' + str(number) + '|' + str(total)
             text_file_date.write(result + '\n')
+
+
+# build comparator
+def compare(date1,date2):
+    if int(date1[4:8]) < int(date2[4:8]):
+        return -1
+    elif int(date1[4:8]) > int(date2[4:8]):
+        return 1
+    else:
+        return int(date1[0:4])-int(date2[0:4])
 
 
 # add elements to dictionary
@@ -50,7 +60,6 @@ def build_dict(dic, recipient_id, group_by):
         dic[recipient_id][group_by] = []
     dic[recipient_id][group_by].append(amount)
 
-# the outputs of step 1 is stored in input_infos
 dic_zip = {}
 dic_date = {}
 
@@ -63,7 +72,7 @@ text_file_date = open(filepath_date, "w")
 with open("./input/itcont.txt") as f:
 
     # Test the code on first five lines.
-    # head = [next(f) for x in xrange(3)]
+    #head = [next(f) for x in xrange(3)]
 
     for line in f:
         text = line.split('|')
